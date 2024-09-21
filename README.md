@@ -1,5 +1,5 @@
 # BasicFileDropper
-Drops a file on the user's computer, allows for program persistence as well
+Drops a file on the user's computer, allows for program persistence as well. Good for corporate usage, eg. auto updates, remotely sending files to a worker through some management tool, etc,.
 
 example:
 
